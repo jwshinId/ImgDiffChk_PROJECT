@@ -67,22 +67,9 @@ def main():
     slide = presentation.Slides(slide_index)
 
     # 첫 번째 이미지 추가
-    #left_first = 100  # 왼쪽 여백
-    #top_first = 100   # 위쪽 여백
-    #width_first = 400
-    #height_first = 300
-    #slide.Shapes.AddPicture(FileName=args["first"], Left=left_first, Top=top_first, width=width_first, height=height_first)
     shape_first = slide.Shapes.AddPicture(FileName=args["first"], LinkToFile=0, SaveWithDocument=-1, Left=-1, Top=-1)
-    #shape_first = slide.Shapes.AddPicture(FileName=args["first"], LinkToFile=0, SaveWithDocument=-1, Left=left_first, Top=-1)
-    
-    # Print out the properties and methods available for shape_first
-    #print(dir(shape_first))
 
     # 첫 번째 이미지 사이즈 조정
-    #shape_first.Width = 405  # 새로운 너비 설정
-    #shape_first.Height = 203 # 새로운 높이 설정
-    #shape_first.left = 55
-    #shape_first.top = 143
     shape_first.LockAspectRatio = 0 # 비율 해제
     shape_first.Width = width   # 새로운 너비 설정
     shape_first.Height = height # 새로운 높이 설정
@@ -90,18 +77,9 @@ def main():
     shape_first.top = f_top     # 새로운 위쪽 여백
 
     # 두 번째 이미지 추가
-    #left_second = 500  # 왼쪽 여백
-    #top_second = 100   # 위쪽 여백
-    #width_second = 400
-    #height_second = 300
-    #slide.Shapes.AddPicture(FileName=args["first"], Left=left_first, Top=top_first, width=width_first, height=height_first)
     shape_second = slide.Shapes.AddPicture(FileName=args["second"], LinkToFile=0, SaveWithDocument=-1, Left=-1, Top=-1)
     
     # 두 번째 이미지 사이즈 조정
-    #shape_second.Width = 405  # 새로운 너비 설정
-    #shape_second.Height = 203 # 새로운 높이 설정
-    #shape_second.left = 491
-    #shape_second.top = 143
     shape_second.LockAspectRatio = 0 # 비율 해제
     shape_second.Width = width   # 새로운 너비 설정
     shape_second.Height = height # 새로운 높이 설정
@@ -114,11 +92,11 @@ def main():
         #left_rect = left_second + (x / imageA.shape[1]) * 400  # 이미지 B에서의 왼쪽 시작점
         #top_rect = top_second + (y / imageA.shape[0]) * 300    # 이미지 B에서의 위쪽 시작점
         
-        left_rect = s_left + (x / imageA.shape[1]) * 400  # 이미지 B에서의 왼쪽 시작점
-        top_rect = s_top + (y / imageA.shape[0]) * 300    # 이미지 B에서의 위쪽 시작점
+        left_rect = s_left + (x / imageA.shape[1]) * width  # 이미지 B에서의 왼쪽 시작점
+        top_rect = s_top + (y / imageA.shape[0]) * height    # 이미지 B에서의 위쪽 시작점
         
-        width_rect = (w / imageA.shape[1]) * 400               # 사각형의 너비
-        height_rect = (h / imageA.shape[0]) * 300              # 사각형의 높이
+        width_rect = (w / imageA.shape[1]) * width               # 사각형의 너비
+        height_rect = (h / imageA.shape[0]) * height              # 사각형의 높이
 
         # 슬라이드에 사각형 추가
         shape = slide.Shapes.AddShape(1, left_rect, top_rect, width_rect, height_rect)  # 1은 msoShapeRectangle
