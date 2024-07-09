@@ -11,14 +11,8 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "-f",
-                "D:\\BeforeAfterPicture\\2040708\\before\\SCR_C1ELEC_BUSWAY_DTS.png",
-                "-s",
-                "D:\\BeforeAfterPicture\\2040708\\after\\SCR_C1ELEC_BUSWAY_DTS.png",
-                "-p",
-                "D:\\BeforeAfterPicture\\FMCS_BeforeAfter_Sample.pptx",
-                "-o",
-                "D:\\BeforeAfterPicture\\FMCS_BeforeAfter_20240708.pptx"
+                "D:\\BeforeAfterPicture\\2040708\\before",
+                "D:\\BeforeAfterPicture\\2040708\\after"
             ],
         }
     ]
