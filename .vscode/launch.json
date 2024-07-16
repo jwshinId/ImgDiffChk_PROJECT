@@ -11,8 +11,8 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "D:\\BeforeAfterPicture\\2040708\\before",
-                "D:\\BeforeAfterPicture\\2040708\\after"
+                "D:\\BeforeAfterPicture\\20240708\\before",
+                "D:\\BeforeAfterPicture\\20240708\\after"
             ],
         }
     ]

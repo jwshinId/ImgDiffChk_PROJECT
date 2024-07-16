@@ -1,25 +1,17 @@
+# startcompare.py
+
+import glob
+import os
+import argparse
 import cv2
 from skimage.metrics import structural_similarity as compare_ssim
-import argparse
 import imutils
-import os
 from win32com.client import Dispatch
 
-def main():
-    # 명령행 인자 파싱
-    ap = argparse.ArgumentParser(description='이미지를 PowerPoint 슬라이드에 삽입하고 차이를 강조합니다.')
-    ap.add_argument("-f", "--first", required=True, help="첫 번째 입력 이미지 경로")
-    ap.add_argument("-s", "--second", required=True, help="두 번째 입력 이미지 경로")
-    ap.add_argument("-p", "--pptx", required=True, help="기존 PowerPoint 파일 경로")
-    ap.add_argument("-o", "--output", required=True, help="출력 PowerPoint 파일 경로")
-    ap.add_argument("-e", "--isend", required=True, help="PowerPoint 종료 유무")
-    ap.add_argument("-i", "--index", required=True, help="PowerPoint 슬라이드 번호")
-    args = vars(ap.parse_args())
-
+def compare_images(args):
     # 이미지 파일 명칭 추출
     imgAname = os.path.basename(args["first"])
     imgBname = os.path.basename(args["second"])
-    
     
     # 첫 번째와 두 번째 이미지 로드
     if imgAname != "Empty":
@@ -39,7 +31,6 @@ def main():
             imageA = cv2.resize(imageA, (width, height), interpolation=cv2.INTER_AREA)
             imageB = cv2.resize(imageB, (width, height), interpolation=cv2.INTER_AREA)
     
-        
     print(f"첫 번째 이미지 크기: width={width}, height={height}")
     
     if height < width:
@@ -74,12 +65,6 @@ def main():
 
     # PowerPoint 파일이 존재하는지 확인
     pptx_path = args["pptx"]
-    #print(f"Opening PowerPoint file at: {pptx_path}")
-    #if not os.path.exists(pptx_path):
-    #    print(f"Error: PowerPoint file not found at {pptx_path}")
-    #    return
-
-    # PowerPoint 애플리케이션 열고 프레젠테이션 로드
     powerpoint = Dispatch("PowerPoint.Application")
 
     if args.get("index") == '2':
@@ -159,11 +144,81 @@ def main():
 
         # PowerPoint 애플리케이션 종료
         powerpoint.Quit()
-            
 
 def RGB(red, green, blue):
     # RGB 값을 반환하는 함수
     return (blue << 16) + (green << 8) + red
 
+def main(folder_path_1, folder_path_2):
+    # 첫 번째 폴더 경로 출력
+    print(f"첫 번째 폴더 경로: {folder_path_1}")
+
+    # 두 번째 폴더 경로 출력
+    print(f"두 번째 폴더 경로: {folder_path_2}")
+
+    # 폴더 1의 PNG 파일 리스트 가져오기
+    image_files_1 = sorted(glob.glob(os.path.join(folder_path_1, '*.png')))
+    # 폴더 2의 PNG 파일 리스트 가져오기
+    image_files_2 = sorted(glob.glob(os.path.join(folder_path_2, '*.png')))
+
+    # 두 폴더의 파일 이름 비교
+    image_files_1_names = {os.path.basename(f): f for f in image_files_1}
+    image_files_2_names = {os.path.basename(f): f for f in image_files_2}
+
+    # 두 폴더에 동일한 파일 이름이 있는지 확인하고 짝짓기
+    image_pairs = []
+    
+    # hashmap 생성
+    hm_befImage = {}
+    hm_aftImage = {}
+    
+    # 둘 다 변경점이 있을 경우
+    for name in image_files_1_names:
+        if name in image_files_2_names:
+            image_pairs.append((image_files_1_names[name], image_files_2_names[name]))
+            hm_befImage[name] = True
+            hm_aftImage[name] = True
+    
+    # 변경 전 화면만 있을 경우
+    for name in image_files_1_names:
+        if not name in hm_befImage:
+            image_pairs.append((image_files_1_names[name], "Empty"))
+            hm_befImage[name] = True
+
+    # 변경 후 화면만 있을 경우
+    for name in image_files_2_names:
+        if not name in hm_aftImage:
+            image_pairs.append(("Empty", image_files_2_names[name]))
+            hm_aftImage[name] = True
+            
+    # ImageCompare 기능 직접 호출
+    for index, (first_image, second_image) in enumerate(image_pairs):
+        pptx_path = 'D:\\BeforeAfterPicture\\FMCS_BeforeAfter_Sample.pptx'  # 여기에 PPTX 파일 경로 설정
+        save_path = 'D:\\BeforeAfterPicture\\FMCS_BeforeAfter_20240708.pptx'  # 여기에 출력 경로 설정
+        args = {
+            "first": first_image,
+            "second": second_image,
+            "pptx": pptx_path,
+            "output": save_path,
+            "isend": "True" if index == len(image_pairs)-1 else "False",
+            "index": str(index + 2)
+        }
+        try:
+            compare_images(args)
+        except Exception as e:
+            print(f"ImageCompare 기능 실행 중 오류 발생: {e}")
+
 if __name__ == '__main__':
-    main()
+    # argparse를 사용하여 커맨드 라인 인자 파싱
+    parser = argparse.ArgumentParser(description='두 폴더의 이미지를 비교합니다.')
+    parser.add_argument('folder1', type=str, help='첫 번째 폴더의 경로')
+    parser.add_argument('folder2', type=str, help='두 번째 폴더의 경로')
+    args = parser.parse_args()
+
+    # 폴더 경로 유효성 검사 (필요시)
+    if not os.path.isdir(args.folder1) or not os.path.isdir(args.folder2):
+        print("폴더 경로가 올바르지 않습니다.")
+        exit(1)
+
+    # main 함수 호출
+    main(args.folder1, args.folder2)

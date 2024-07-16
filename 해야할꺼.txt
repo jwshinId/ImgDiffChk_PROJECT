@@ -1,1 +1,4 @@
-pyinstaller --onedir ImageCompare.py
+pyinstaller --onefile startcompare.py
+
+
+makePowerPoint.exe D:\BeforeAfterPicture\20240708\Before D:\BeforeAfterPicture\20240708\After
